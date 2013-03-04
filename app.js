@@ -15,6 +15,7 @@ app.configure(function () {
 
 //LOCATION
 	//curl -i -X POST -H 'Content-Type: application/json' -d'{"longtitude" : "106.63896", "lattitude": "10.827257" ,"number":"10"}' http://localhost:3001/atm/distance
+	//curl -i -X POST -H 'Content-Type: application/json' -d'{"longtitude" : "106.63896", "lattitude": "10.827257" ,"number":"10"}' ttp://atm.rs.af.cm/atm/distance
 	app.post('/atm/distance', account.findByDistance);
 
 // USER
