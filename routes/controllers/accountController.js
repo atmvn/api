@@ -15,6 +15,9 @@ exports.findByDistance = function(req, res) {
     		"city":"HCM"
     	};
 
+    conditions = {
+    };
+
     console.log('- number: ' + number);
     console.log('- conditions: ' + JSON.stringify(conditions));
 

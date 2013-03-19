@@ -61,7 +61,7 @@ var db;
 
 require('mongodb').connect(mongourl, function(err, conn){
 	db = conn;
-	AM.atm = db.collection('places');
+	AM.atm = db.collection('banks');
 });
 
 
@@ -862,7 +862,7 @@ AM.rating = function(id,like,usertype,callback)
 //maxDistance : 10/3963
 AM.findByDistance = function(longtitude, lattitude, number, conditions, maxDistance,callback) 
 {
-	var tbAccounts = 'places';
+	var tbAccounts = 'banks';
 
 	console.log("xxxxxx=" + longtitude + "," + lattitude + "- number:" + number + "- conditions:" + conditions + "- maxDistance:" + maxDistance);
 
