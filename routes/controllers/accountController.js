@@ -29,7 +29,7 @@ exports.findByDistance = function(req, res) {
     var usertype = 0;
     var maxDistance = 10/3963;
     //maxDistance = 1000000/3963;
-    AM.findByDistance(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
+    AM.findByDistance_v2(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
 		if (e) {
 			retdata.msg = e;
 			res.send(retdata, 400);
@@ -94,7 +94,7 @@ exports.findByDistanceDetailID_v1 = function(req, res) {
     var usertype = 0;
     var maxDistance = 10/3963;
     //maxDistance = 1000000/3963;
-    AM.findByDistance(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
+    AM.findByDistance_v2(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
 		if (e) {
 			retdata.msg = e;
 			res.send(retdata, 400);
@@ -151,7 +151,7 @@ exports.findByDistanceDetailName_v1 = function(req, res) {
     var usertype = 0;
     var maxDistance = 10/3963;
     //maxDistance = 1000000/3963;
-    AM.findByDistance(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
+    AM.findByDistance_v2(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
 		if (e) {
 			retdata.msg = e;
 			res.send(retdata, 400);

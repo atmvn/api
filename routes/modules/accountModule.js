@@ -985,7 +985,18 @@ AM.findByDistance_v2 = function(longtitude, lattitude, number, conditions, maxDi
 			callback(e,null);
 		}
 		else {
-			
+			// filter unused info
+			results = o.results;
+
+			o.ns = undefined;
+			o.near = undefined;
+			o.stats = undefined;
+			for (var i = results.length - 1; i >= 0; i--) {
+				//results[i].obj 
+				//console.log('- number: ' + results[i].obj.googlemaps + results[i].dis);
+				results[i].obj.googlemaps = undefined;
+
+			};
 			callback(null,o);
 		}
      });
