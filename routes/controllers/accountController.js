@@ -3,6 +3,7 @@
 var    AM = require('../modules/accountModule');
 var    aigoDefine = require('../configs/define');
 //var app = express.createServer();
+var    MAXPLACE = 20;
 
 exports.findByDistance = function(req, res) {
     
@@ -17,8 +18,8 @@ exports.findByDistance = function(req, res) {
     conditions = {
     };
 
-    if (number > 50 || number == undefined ) {
-    	number = 50;
+    if (number > MAXPLACE || number == undefined ) {
+    	number = MAXPLACE;
     }
 
     console.log('- number: ' + number);
@@ -69,8 +70,8 @@ exports.findByDistanceDetailID_v1 = function(req, res) {
     var conditions = {
     	};
 
-    if (number > 50 || number == undefined ) {
-    	number = 50;
+    if (number > MAXPLACE || number == undefined ) {
+    	number = MAXPLACE;
     }
 
    	if (banktype == "all" || banktype == undefined ) {
@@ -118,8 +119,8 @@ exports.findByDistanceDetailName_v1 = function(req, res) {
     var conditions = {
     	};
 
-    if (number > 50 || number == undefined ) {
-    	number = 50;
+    if (number > MAXPLACE || number == undefined ) {
+    	number = MAXPLACE;
     }
 
    	if (banktype == "all" || banktype == undefined ) {
@@ -205,7 +206,7 @@ exports.validateData = function(req, res) {
 	
 }
 
-exports.getBankIDList_v1 = function(req, res) {
+exports.getConfiguration_v1 = function(req, res) {
 
 	console.log('------------getBankIDList start');
 	var retdata = {};
@@ -234,44 +235,46 @@ exports.getBankIDList_v1 = function(req, res) {
 					console.log('-------getBankIDList----- OK');
 					for (var i = o.length - 1; i >= 0; i--) {
 						var placeObject = o[i];
-						//console.log('------------ o: ' + placeObject + placeObject.bankID);
+							console.log('------------ o: ' + placeObject + placeObject.bankID);
 						var boolCheck = bankIDList.indexOf(placeObject.bankID);
-						if (boolCheck == -1) {
+						if (boolCheck == -1 && placeObject.bankID !=undefined ) {
 							bankIDList.push(placeObject.bankID);
 						}
 
 						boolCheck = cityList.indexOf(placeObject.city);
-						if (boolCheck == -1) {
+						if (boolCheck == -1 && placeObject.city !=undefined) {
 							cityList.push(placeObject.city);
 						}
 
 						boolCheck = bankNameENList.indexOf(placeObject.bankNameEN);
-						if (boolCheck == -1) {
+						if (boolCheck == -1 && placeObject.bankNameEN !=undefined) {
 							bankNameENList.push(placeObject.bankNameEN);
 						}
 
 						boolCheck = bankNameVNList.indexOf(placeObject.bankNameVN);
-						if (boolCheck == -1) {
+						if (boolCheck == -1 && placeObject.bankNameVN !=undefined) {
 							bankNameVNList.push(placeObject.bankNameVN);
 						}
 
 						boolCheck = bankTypeList.indexOf(placeObject.banktype);
-						if (boolCheck == -1) {
+						if (boolCheck == -1 && placeObject.banktype !=undefined) {
 							bankTypeList.push(placeObject.banktype);
 						}
 
 					};	
 
 					retdata.msg = "OK";
-					var data = [];
-					data.config = 'dafault';
-					data.config.bankIDList = bankIDList;
-					data.config.cityList = cityList;
-					data.config.bankTypeList = bankTypeList;
-					data.config.bankNameVNList = bankNameVNList;
-					data.config.bankNameENList = bankNameENList;
-					retdata.config = data.config
-					AM.insertData(tableDB,data,function(e, res) {
+					var config = {};
+					//config = 'dafault';
+					config.bankIDList = bankIDList;
+					config.cityList = cityList;
+					config.bankTypeList = bankTypeList;
+					config.bankNameVNList = bankNameVNList;
+					config.bankNameENList = bankNameENList;
+					retdata.config = config;
+					data = {_tag:_configuration,_configuration:config};
+					console.log('------------ o: ' + config.bankIDList + config.cityList + config.bankNameENList);
+					AM.insertData(tableDB,data,function(e, o) {
 					});
 
 					res.send(retdata, 200);
@@ -280,18 +283,18 @@ exports.getBankIDList_v1 = function(req, res) {
 			});	
 		} else {
 			console.log('-------getBankIDList----- HAD');
-			var data = places
+			// var data = places
 			// data.config = 'dafault';
 			// data.config.bankIDList = bankIDList;
 			// data.config.cityList = cityList;
 			// data.config.bankTypeList = bankTypeList;
 			// data.config.bankNameVNList = bankNameVNList;
 			// data.config.bankNameENList = bankNameENList;
-			retdata.config = data.config
+			// retdata = data;
 			//AM.insertData(tableDB,data,function(e, res) {
 			//});
 
-			res.send(retdata, 200);
+			res.send(places, 200);
 		}
 	});
 }

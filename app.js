@@ -28,8 +28,8 @@ app.configure(function () {
 
 	app.get('/atm/validateData', account.validateData);
 
-	// http://localhost:3001/atm/bankIDList
-	app.get('/atm/bankIDList', account.getBankIDList_v1);
+	// http://localhost:3001/atm/configuration
+	app.get('/atm/configuration', account.getConfiguration_v1);
 
 // Google geocoder
 	app.get('/google/geocoder/:startIndex/:endIndex', googlemap.geocoderSeq);

@@ -726,9 +726,9 @@ AM.findConfigData = function(usertype, callback)
 		tbAccounts = AM.clients;
 	}
 
-	tbAccounts.findOne({config:'default'}, function(e, o) {
+	tbAccounts.findOne({_tag: "_configuration"}, function(e, o) {
 		if (o == null){
-			callback('config-not-found');
+			callback('config-not-found',null);
 		}	else {
 			callback(null, o);
 		}
