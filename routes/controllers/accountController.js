@@ -4,7 +4,6 @@ var    AM = require('../modules/accountModule');
 var    aigoDefine = require('../configs/define');
 //var app = express.createServer();
 
-
 exports.findByDistance = function(req, res) {
     
     var number = req.body.number;
@@ -17,6 +16,10 @@ exports.findByDistance = function(req, res) {
 
     conditions = {
     };
+
+    if (number > 50 || number == undefined ) {
+    	number = 50;
+    }
 
     console.log('- number: ' + number);
     console.log('- conditions: ' + JSON.stringify(conditions));
@@ -54,6 +57,246 @@ exports.findByDistance = function(req, res) {
 	// });	
 	
 }
+
+
+exports.findByDistanceDetailID_v1 = function(req, res) {
+    
+    var number = req.body.number;
+    var bankID = req.body.bankID;
+   	//var city = req.body.city;
+   	var banktype = req.body.banktype;
+
+    var conditions = {
+    	};
+
+    if (number > 50 || number == undefined ) {
+    	number = 50;
+    }
+
+   	if (banktype == "all" || banktype == undefined ) {
+   		conditions = {
+    		//"city":city,
+    		"bankID":bankID
+    	};
+   	} else {
+   		conditions = {
+    		//"city":city,
+    		"bankID":bankID,
+    		"banktype":banktype
+    	};
+   	}
+
+    console.log('- number: ' + number);
+    console.log('- conditions: ' + JSON.stringify(conditions));
+
+    var retdata = {};
+    var usertype = 0;
+    var maxDistance = 10/3963;
+    //maxDistance = 1000000/3963;
+    AM.findByDistance(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
+		if (e) {
+			retdata.msg = e;
+			res.send(retdata, 400);
+		}	else {
+			retdata = o;
+			retdata.msg = 'ok';
+			res.send(retdata, 200);
+		}
+	});	
+	
+}
+
+exports.findByDistanceDetailName_v1 = function(req, res) {
+    
+    var number = req.body.number;
+    //var bankID = req.body.bankID;
+   	var city = req.body.city;
+   	var bankNameEN = req.body.bankNameEN;
+   	var banktype = req.body.banktype;
+
+
+    var conditions = {
+    	};
+
+    if (number > 50 || number == undefined ) {
+    	number = 50;
+    }
+
+   	if (banktype == "all" || banktype == undefined ) {
+   		conditions = {
+    		//"city":city,
+    		"bankNameEN":bankNameEN
+    	};
+   	} else {
+   		conditions = {
+    		//"city":city,
+    		"bankNameEN":bankNameEN,
+    		"banktype":banktype
+    	};
+   	}
+
+    // var conditions = {
+    // 		"city":'HCM',
+    // 		"bankID":bankID,
+    // 	};
+
+    // conditions = {
+    // };
+
+    console.log('- number: ' + number);
+    console.log('- conditions: ' + JSON.stringify(conditions));
+
+    var retdata = {};
+    var usertype = 0;
+    var maxDistance = 10/3963;
+    //maxDistance = 1000000/3963;
+    AM.findByDistance(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
+		if (e) {
+			retdata.msg = e;
+			res.send(retdata, 400);
+		}	else {
+			retdata = o;
+			retdata.msg = 'ok';
+			res.send(retdata, 200);
+		}
+	});	
+	
+}
+
+exports.validateData = function(req, res) {
+
+	console.log('------------getBankIDList' + bankIDList.length);
+	var retdata = {};
+
+	var tableDB = 1;
+
+	
+	AM.getAllRecords(tableDB,function(e, o) {
+		
+		if (!o) {
+			console.log('-----getBankIDList------- FAILED');
+			retdata.msg = e;
+			res.send(retdata, 400);
+		} else {
+			console.log('-------getBankIDList----- OK');
+			for (var i = o.length - 1; i >= 0; i--) {
+				var placeObject = o[i];
+				console.log('-------getBankIDList----- OK'  + placeObject.gmchecked);
+				if (placeObject.gmchecked == "1") {
+					console.log('------------1: ' + placeObject + placeObject.loc[1] + placeObject.loc[0]);
+
+					// revsert long lat from google map.
+					if (Number(placeObject.loc[1]) > Number(placeObject.loc[0])) {
+						placeObject.loc = [Number(placeObject.loc[1]),Number(placeObject.loc[0])];
+						AM.saveData(tableDB,placeObject,function(e, res) {
+						});
+						console.log('------------ o: ' + placeObject + placeObject.loc[1] + placeObject.loc[0]);
+					}
+				}
+				//bankIDList.push(placeObject.bankID);
+			};	
+
+			retdata.msg = "OK";
+			//retdata.bankIDList = bankIDList;
+			res.send(retdata, 200);
+						
+		}
+	});	
+	
+}
+
+exports.getBankIDList_v1 = function(req, res) {
+
+	console.log('------------getBankIDList start');
+	var retdata = {};
+
+	var tableDB = 1;
+
+	
+	AM.findConfigData(tableDB,function(e, places) {
+		
+		if (e) {
+			console.log('-----getBankIDList------- HAD NOT');
+	//if ( bankIDList.length == 0 ) {
+			var bankIDList = [];
+			var cityList = [];
+			var bankNameENList = [];
+			var bankNameVNList = [];
+			var bankTypeList = [];
+
+			AM.getAllRecords(tableDB,function(e, o) {
+				
+				if (!o) {
+					console.log('-----getBankIDList------- FAILED');
+					retdata.msg = e;
+					res.send(retdata, 400);
+				} else {
+					console.log('-------getBankIDList----- OK');
+					for (var i = o.length - 1; i >= 0; i--) {
+						var placeObject = o[i];
+						//console.log('------------ o: ' + placeObject + placeObject.bankID);
+						var boolCheck = bankIDList.indexOf(placeObject.bankID);
+						if (boolCheck == -1) {
+							bankIDList.push(placeObject.bankID);
+						}
+
+						boolCheck = cityList.indexOf(placeObject.city);
+						if (boolCheck == -1) {
+							cityList.push(placeObject.city);
+						}
+
+						boolCheck = bankNameENList.indexOf(placeObject.bankNameEN);
+						if (boolCheck == -1) {
+							bankNameENList.push(placeObject.bankNameEN);
+						}
+
+						boolCheck = bankNameVNList.indexOf(placeObject.bankNameVN);
+						if (boolCheck == -1) {
+							bankNameVNList.push(placeObject.bankNameVN);
+						}
+
+						boolCheck = bankTypeList.indexOf(placeObject.banktype);
+						if (boolCheck == -1) {
+							bankTypeList.push(placeObject.banktype);
+						}
+
+					};	
+
+					retdata.msg = "OK";
+					var data = [];
+					data.config = 'dafault';
+					data.config.bankIDList = bankIDList;
+					data.config.cityList = cityList;
+					data.config.bankTypeList = bankTypeList;
+					data.config.bankNameVNList = bankNameVNList;
+					data.config.bankNameENList = bankNameENList;
+					retdata.config = data.config
+					AM.insertData(tableDB,data,function(e, res) {
+					});
+
+					res.send(retdata, 200);
+								
+				}
+			});	
+		} else {
+			console.log('-------getBankIDList----- HAD');
+			var data = places
+			// data.config = 'dafault';
+			// data.config.bankIDList = bankIDList;
+			// data.config.cityList = cityList;
+			// data.config.bankTypeList = bankTypeList;
+			// data.config.bankNameVNList = bankNameVNList;
+			// data.config.bankNameENList = bankNameENList;
+			retdata.config = data.config
+			//AM.insertData(tableDB,data,function(e, res) {
+			//});
+
+			res.send(retdata, 200);
+		}
+	});
+}
+
+
 
 //~/Working/aigo/api/routes/modules/accountModule.js
 

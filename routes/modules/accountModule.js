@@ -58,10 +58,13 @@ var generate_mongo_url = function(obj){
 }
 var mongourl = generate_mongo_url(mongo);
 var db;
+var dbName = 'banks_v4';
 
 require('mongodb').connect(mongourl, function(err, conn){
 	db = conn;
-	AM.atm = db.collection('banks');
+	//AM.atm = db.collection('banks_v2');
+	AM.atmv3 = db.collection(dbName);
+	AM.atm = AM.atmv3;
 });
 
 
@@ -153,6 +156,7 @@ var getInfoFromGeoNear = function(o) {
     }
 	return info;
 }
+
 
 //var DB = require('./dbModule');
 
@@ -427,11 +431,11 @@ AM.getObjectId = function(id,usertype)
 
 AM.getAllRecords = function(usertype,callback)
 {
-	var tbAccounts = AM.accounts;
+	var tbAccounts = AM.atm;
 	if (usertype == 1) {
-		tbAccounts = AM.drivers;
+		tbAccounts = AM.atmv3;
 	} else if (usertype == 0){
-		tbAccounts = AM.clients
+		tbAccounts = AM.places
 	}
 	tbAccounts.find().toArray(
 		function(e, res) {
@@ -676,19 +680,59 @@ AM.freeUpdate = function(newData, usertype, callback)
 }
 
 
-AM.saveData = function(newData, usertype, callback)
+AM.saveData = function(usertype,newData, callback)
 {
-	var tbAccounts = AM.accounts;
-	console.log("saveData-usertype--------------" + usertype);
+	var tbAccounts = AM.atm;
+	//console.log("saveData-usertype--------------" + usertype);
 	if (usertype == 1) {
-		console.log("saveData-drivers--------------");
-		tbAccounts = AM.drivers;
+		//console.log("saveData-drivers--------------");
+		tbAccounts = AM.atmv3;
 	} else if (usertype == 0){
-		console.log("saveData-clients--------------");
+		//console.log("saveData-clients--------------");
 		tbAccounts = AM.clients;
 	}
 	//console.log("--------------" + JSON.stringify(newData));
 	tbAccounts.save(newData); callback(null,newData);
+}
+
+AM.insertData = function(usertype,newData, callback)
+{
+	var tbAccounts = AM.atm;
+	//console.log("saveData-usertype--------------" + usertype);
+	if (usertype == 1) {
+		//console.log("saveData-drivers--------------");
+		tbAccounts = AM.atmv3;
+	} else if (usertype == 0){
+		//console.log("saveData-clients--------------");
+		tbAccounts = AM.clients;
+	}
+	//console.log("--------------" + JSON.stringify(newData));
+	tbAccounts.insert(newData, function(e, o) {
+		if (e) {
+			callback(e,null);
+		}	else {	
+			callback(null,o);
+		}
+	});
+}
+
+AM.findConfigData = function(usertype, callback)
+{
+
+	var tbAccounts = AM.atm;
+	if (usertype == 1) {
+		tbAccounts = AM.atmv3;
+	} else if (usertype == 0){
+		tbAccounts = AM.clients;
+	}
+
+	tbAccounts.findOne({config:'default'}, function(e, o) {
+		if (o == null){
+			callback('config-not-found');
+		}	else {
+			callback(null, o);
+		}
+	});
 }
 
 AM.addDeviceToken = function(id,deviceToken,usertype,callback)
@@ -862,9 +906,9 @@ AM.rating = function(id,like,usertype,callback)
 //maxDistance : 10/3963
 AM.findByDistance = function(longtitude, lattitude, number, conditions, maxDistance,callback) 
 {
-	var tbAccounts = 'banks';
+	var tbAccounts = dbName;
 
-	console.log("xxxxxx=" + longtitude + "," + lattitude + "- number:" + number + "- conditions:" + conditions + "- maxDistance:" + maxDistance);
+	//console.log("xxxxxx=" + longtitude + "," + lattitude + "- number:" + number + "- conditions:" + conditions + "- maxDistance:" + maxDistance);
 
 	// convert conditions to object
 	var con = conditions;
@@ -872,7 +916,7 @@ AM.findByDistance = function(longtitude, lattitude, number, conditions, maxDista
 		con = JSON.parse(conditions);
 	}
 	
-	console.log("xxxxxx=" + longtitude + "," + lattitude + "- number:" + number + "- conditions:" + con + "- maxDistance:" + maxDistance);
+	//console.log("xxxxxx=" + longtitude + "," + lattitude + "- number:" + number + "- conditions:" + con + "- maxDistance:" + maxDistance);
 
 	//con = conditions;
 
@@ -912,6 +956,36 @@ AM.findByDistance = function(longtitude, lattitude, number, conditions, maxDista
 			callback(e,null);
 		}
 		else {
+
+			callback(null,o);
+		}
+     });
+};
+
+AM.findByDistance_v2 = function(longtitude, lattitude, number, conditions, maxDistance,callback) 
+{
+	var tbAccounts = dbName;
+
+	var con = conditions;
+	if (typeof(conditions) != 'object') {
+		con = JSON.parse(conditions);
+	}
+	
+	var lat = lattitude;
+	var lon = longtitude;	
+    db.command({geoNear: tbAccounts, near: [Number(lon),Number(lat)] , distanceMultiplier: 3963, spherical: true, num: Number(number), maxDistance : Number(maxDistance),
+     	query:{
+			$and:[
+					con
+				]
+			}
+		}, function(e, o) {
+		if (e) { 
+			console.log(e);
+			callback(e,null);
+		}
+		else {
+			
 			callback(null,o);
 		}
      });

@@ -3,6 +3,8 @@ var express = require('express'),
     account = require('./routes/controllers/accountController');
     apns = require('./routes/controllers/apnController');
     transaction = require('./routes/controllers/transactionController');
+    googlemap = require('./routes/controllers/googlemapsController');
+
 
 var app = express.createServer();
 //var app = express();
@@ -18,6 +20,22 @@ app.configure(function () {
 	//curl -i -X POST -H 'Content-Type: application/json' -d'{"longtitude" : "106.63896", "lattitude": "10.827257" ,"number":"10"}' ttp://atm.rs.af.cm/atm/distance
 	app.post('/atm/distance', account.findByDistance);
 
+	//curl -i -X POST -H 'Content-Type: application/json' -d'{"longtitude" : "106.63896", "lattitude": "10.827257" ,"number":"10","bankID":"MB","banktype":"BRANCH }' http://localhost:3001/atm/searchID_v1
+	app.post('/atm/searchID_v1', account.findByDistanceDetailID_v1);
+
+	//curl -i -X POST -H 'Content-Type: application/json' -d'{"longtitude" : "106.63896", "lattitude": "10.827257" ,"number":"10","bankNameEN":"Vietinbank","city""HCM","banktype":"all" }' http://localhost:3001/atm/searchName_v1
+	app.post('/atm/searchName_v1', account.findByDistanceDetailName_v1);
+
+	app.get('/atm/validateData', account.validateData);
+
+	// http://localhost:3001/atm/bankIDList
+	app.get('/atm/bankIDList', account.getBankIDList_v1);
+
+// Google geocoder
+	app.get('/google/geocoder/:startIndex/:endIndex', googlemap.geocoderSeq);
+
+
+// ---------------------------
 // USER
 	app.post('/accounts/driver/signup', account.signUpDriver);
 	app.post('/accounts/client/signup', account.signUpClient);
