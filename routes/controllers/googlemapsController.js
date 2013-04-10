@@ -1,11 +1,9 @@
-require('v8-profiler');
 var gm = require('googlemaps');
 var AM = require('../modules/accountModule');
 var util = require('util');
 var sleep = require('sleep');
 
-function LeakingClass() {
-}
+
 
 
 util.puts("geocode started.");
