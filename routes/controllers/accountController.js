@@ -166,7 +166,7 @@ exports.findByDistanceDetailName_v1 = function(req, res) {
 
 exports.validateData = function(req, res) {
 
-	console.log('------------getBankIDList' + bankIDList.length);
+	//console.log('------------getBankIDList' + bankIDList.length);
 	var retdata = {};
 
 	var tableDB = 1;
@@ -183,17 +183,17 @@ exports.validateData = function(req, res) {
 			for (var i = o.length - 1; i >= 0; i--) {
 				var placeObject = o[i];
 				console.log('-------getBankIDList----- OK'  + placeObject.gmchecked);
-				if (placeObject.gmchecked == "1") {
-					console.log('------------1: ' + placeObject + placeObject.loc[1] + placeObject.loc[0]);
-
+				// revsert long lat from google map.
+				//if (placeObject.gmchecked == "1") {
+					//console.log('------------1: ' + placeObject + placeObject.loc[1] + placeObject.loc[0]);
 					// revsert long lat from google map.
-					if (Number(placeObject.loc[1]) > Number(placeObject.loc[0])) {
+					if (placeObject.loc != null && Number(placeObject.loc[1]) > Number(placeObject.loc[0])) {
 						placeObject.loc = [Number(placeObject.loc[1]),Number(placeObject.loc[0])];
 						AM.saveData(tableDB,placeObject,function(e, res) {
 						});
 						console.log('------------ o: ' + placeObject + placeObject.loc[1] + placeObject.loc[0]);
 					}
-				}
+				//}
 				//bankIDList.push(placeObject.bankID);
 			};	
 
@@ -272,7 +272,7 @@ exports.getConfiguration_v1 = function(req, res) {
 					config.bankNameVNList = bankNameVNList;
 					config.bankNameENList = bankNameENList;
 					retdata.config = config;
-					data = {_tag:_configuration,_configuration:config};
+					data = {_tag:"_configuration",_configuration:config};
 					console.log('------------ o: ' + config.bankIDList + config.cityList + config.bankNameENList);
 					AM.insertData(tableDB,data,function(e, o) {
 					});

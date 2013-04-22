@@ -9,45 +9,47 @@ var sleep = require('sleep');
 util.puts("geocode started.");
 
 var checkedIndex = [];
-exports.geocoder = function(req, res) {
+// exports.geocoder = function(req, res) {
 
-	checkedIndex = [];
-	var retdata = {};
+// 	checkedIndex = [];
+// 	var retdata = {};
 
-	util.puts("geocoding......");
+// 	util.puts("geocoding......");
 
-	var tableDB = 1;
-	AM.getAllRecords(tableDB,function(e, o) {
-		if (!o) {
-			retdata.msg = e;
-			res.send(retdata, 400);
-		}	else {
-			// retdata = o;
-			// retdata.msg = 'ok';
-			// res.send(retdata, 200);
-			for(var placeIndex = 1; placeIndex < 200 ; ++placeIndex) {
-				sleep.sleep(0.5)//sleep for 5 seconds
-				console.log(" - index:" + placeIndex + " --- "+ o[placeIndex].address );
+// 	var tableDB = 1;
+// 	AM.getAllRecords(tableDB,function(e, o) {
+// 		if (!o) {
+// 			retdata.msg = e;
+// 			res.send(retdata, 400);
+// 		}	else {
+// 			// retdata = o;
+// 			// retdata.msg = 'ok';
+// 			// res.send(retdata, 200);
+// 			for(var placeIndex = 1; placeIndex < 200 ; ++placeIndex) {
+// 				sleep.sleep(0.5)//sleep for 5 seconds
+// 				console.log(" - index:" + placeIndex + " --- "+ o[placeIndex].address );
 				
-				var address = o[placeIndex].address + "," + o[placeIndex].city;
+// 				var address = o[placeIndex].address + "," + o[placeIndex].city;
 
-				dbPlaceGeocoder(o[placeIndex],function(e, placeObject){
-					if (e) {
-						//console.log('Geocoder - error:' + e + '---address' + address);
-						retdata.msg = e;
-						//res.send(retdata, 400);
-					} else {
-						AM.saveData(tableDB,placeObject);	
-					}
-				});
-			}
-		}
-	});	
-}
+// 				dbPlaceGeocoder(o[placeIndex],function(e, placeObject){
+// 					if (e) {
+// 						//console.log('Geocoder - error:' + e + '---address' + address);
+// 						retdata.msg = e;
+// 						//res.send(retdata, 400);
+// 					} else {
+// 						AM.saveData(tableDB,placeObject);	
+// 					}
+// 				});
+// 			}
+// 		}
+// 	});	
+// }
 
 exports.geocoderSeq = function(req, res) {
 
 	var retdata = {};
+
+	checkedIndex = [];
 
 	util.puts("geocoding...... start index = " + req.params.startIndex + " --- end index = " + req.params.endIndex );
 
@@ -92,75 +94,90 @@ geocoderSequence = function(places,placeIndex,maxIndex,callback) {
 
 	var boolCheck = checkedIndex.indexOf(placeIndex);
 
-	if (boolCheck == -1) {
-		decodeLoop(placeObject,1,function(e, Res_placeObject){
-			if (e) {
-				//console.log('Geocoder - error:' + e + '---address' + address);
-				retdata.msg = e;
-				console.log(" - geocoderSequence - placeIndex - error: " + placeIndex + "----- [ERROR] -> [NEXT]" + e);
-
-				// save and check unknow from google code
-				if (placeObject.gmchecked == "-1") {
-					console.log(" - geocoderSequence - placeIndex - error: " + placeIndex + "----- [SAVE-UNKNOWN-ADDRESS] -> [NEXT]" + e);
-					AM.saveData(tableDB,Res_placeObject,function(e, res) {
-					});
-				}
-
-				placeIndex = placeIndex + 1;
-				if (placeIndex < maxIndex && checkedIndex.indexOf(placeIndex) == -1) {
-					sleep.sleep(1)//sleep for 5 seconds
-					console.log(" - geocoderSequence - placeIndex - error: " + placeIndex + "--- maxIndex: " + maxIndex + "----- [NEXT]");
-					geocoderSequence(places,placeIndex,maxIndex,function(e, Res_placeObject) {
-
-					});;
-				}
-				else {
-					console.log(" - geocoderSequence - placeIndex:- error" + placeIndex + "--- maxIndex: " + maxIndex + " --checkedIndex=" + checkedIndex +"----- [DONE]");
-					retdata.msg = "done";
-					callback(null, retdata);	
-				}
-			} else {
-				//var boolCheck = checkedIndex.indexOf(placeIndex);
-				console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + "----- [OK]");
-				checkedIndex.push(placeIndex);
-				Res_placeObject.gmchecked = "1";
-				AM.saveData(tableDB,Res_placeObject,function(e, res) {
-					if (e) {
-			                retdata.msg = e;
-							console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + "-----Save error" + e);
-					} else {
-						placeIndex = placeIndex + 1;
-						var boolCheck = checkedIndex.indexOf(placeIndex);
-						console.log(" - geocoderSequence - checkedIndex: " + boolCheck + "[NEXT]");
-						if (placeIndex < maxIndex && boolCheck == -1) {
-							sleep.sleep(1)//sleep for 5 seconds
-							console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + "----- [NEXT]");
-							geocoderSequence(places,placeIndex,maxIndex,function(e, Res_placeObject) {
-
-							});
-						}
-						else {
-							console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + " --checkedIndex=" + checkedIndex + "----- [DONE]");
-							retdata.msg = "done";
-							callback(null, retdata);	
-						}
-					}
-				});
-				
-				
-			}
-		});
-	} else {
+	// ------------ TRongv- temporary udpate for loc is null
+	maxIndex = 14056;
+	if (placeObject.loc != null) {
 		// go to next object
 		placeIndex = placeIndex + 1;
 		if (placeIndex < maxIndex) {
-			sleep.sleep(1)//sleep for 5 seconds
+			//sleep.sleep(1)//sleep for 5 seconds
 			console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + "----- [NEXT]");
 			geocoderSequence(places,placeIndex,maxIndex,function(e, Res_placeObject) {
 
-			});;
-		}
+			});
+		}	
+	} else {
 
+		if (boolCheck == -1) {
+			decodeLoop(placeObject,1,function(e, Res_placeObject){
+				if (e) {
+					//console.log('Geocoder - error:' + e + '---address' + address);
+					retdata.msg = e;
+					console.log(" - geocoderSequence - placeIndex - error: " + placeIndex + "----- [ERROR] -> [NEXT]" + e);
+
+					// save and check unknow from google code
+					if (placeObject.gmchecked == "-1") {
+						console.log(" - geocoderSequence - placeIndex - error: " + placeIndex + "----- [SAVE-UNKNOWN-ADDRESS] -> [NEXT]" + e);
+						AM.saveData(tableDB,Res_placeObject,function(e, res) {
+						});
+					}
+
+					placeIndex = placeIndex + 1;
+					if (placeIndex < maxIndex && checkedIndex.indexOf(placeIndex) == -1) {
+						sleep.sleep(1)//sleep for 5 seconds
+						console.log(" - geocoderSequence - placeIndex - error: " + placeIndex + "--- maxIndex: " + maxIndex + "----- [NEXT]");
+						geocoderSequence(places,placeIndex,maxIndex,function(e, Res_placeObject) {
+
+						});;
+					}
+					else {
+						console.log(" - geocoderSequence - placeIndex:- error" + placeIndex + "--- maxIndex: " + maxIndex + " --checkedIndex=" + checkedIndex +"----- [DONE]");
+						retdata.msg = "done";
+						callback(null, retdata);	
+					}
+				} else {
+					//var boolCheck = checkedIndex.indexOf(placeIndex);
+					console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + "----- [OK]");
+					checkedIndex.push(placeIndex);
+					Res_placeObject.gmchecked = "1";
+					AM.saveData(tableDB,Res_placeObject,function(e, res) {
+						if (e) {
+				                retdata.msg = e;
+								console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + "-----Save error" + e);
+						} else {
+							placeIndex = placeIndex + 1;
+							var boolCheck = checkedIndex.indexOf(placeIndex);
+							console.log(" - geocoderSequence - checkedIndex: " + boolCheck + "[NEXT]");
+							if (placeIndex < maxIndex && boolCheck == -1) {
+								sleep.sleep(1)//sleep for 5 seconds
+								console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + "----- [NEXT]");
+								geocoderSequence(places,placeIndex,maxIndex,function(e, Res_placeObject) {
+
+								});
+							}
+							else {
+								console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + " --checkedIndex=" + checkedIndex + "----- [DONE]");
+								retdata.msg = "done";
+								callback(null, retdata);	
+							}
+						}
+					});
+					
+					
+				}
+			});
+		} else {
+			// go to next object
+			placeIndex = placeIndex + 1;
+			if (placeIndex < maxIndex) {
+				sleep.sleep(1)//sleep for 5 seconds
+				console.log(" - geocoderSequence - placeIndex: " + placeIndex + "--- maxIndex: " + maxIndex + "----- [NEXT]");
+				geocoderSequence(places,placeIndex,maxIndex,function(e, Res_placeObject) {
+
+				});
+			}
+
+		}
 	}
 }
 

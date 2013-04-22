@@ -58,7 +58,7 @@ var generate_mongo_url = function(obj){
 }
 var mongourl = generate_mongo_url(mongo);
 var db;
-var dbName = 'banks_v4';
+var dbName = 'banks_v5';
 
 require('mongodb').connect(mongourl, function(err, conn){
 	db = conn;
@@ -966,6 +966,8 @@ AM.findByDistance_v2 = function(longtitude, lattitude, number, conditions, maxDi
 {
 	var tbAccounts = dbName;
 
+	console.log("xxxxxx=" + longtitude + "," + lattitude + "- number:" + number + "- conditions:" + conditions + "- maxDistance:" + maxDistance);
+
 	var con = conditions;
 	if (typeof(conditions) != 'object') {
 		con = JSON.parse(conditions);
@@ -990,7 +992,7 @@ AM.findByDistance_v2 = function(longtitude, lattitude, number, conditions, maxDi
 
 			o.ns = undefined;
 			o.near = undefined;
-			o.stats = undefined;
+			o.stats = undefined;	
 			for (var i = results.length - 1; i >= 0; i--) {
 				//results[i].obj 
 				//console.log('- number: ' + results[i].obj.googlemaps + results[i].dis);
