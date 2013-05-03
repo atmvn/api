@@ -74,14 +74,21 @@ exports.findByDistanceDetailID_v1 = function(req, res) {
     	number = MAXPLACE;
     }
 
-   	if (banktype == "all" || banktype == undefined ) {
+    if ( (banktype == "all" || banktype == undefined) && (bankID == "all" || bankID == undefined))  {
    		conditions = {
-    		//"city":city,
+    	};
+   	}
+   	else if (banktype == "all" || banktype == undefined ) {
+   		conditions = {
     		"bankID":bankID
+    	};
+    }
+    else if (bankID == "all" || bankID == undefined ) {
+   		conditions = {
+    		"banktype":banktype
     	};
    	} else {
    		conditions = {
-    		//"city":city,
     		"bankID":bankID,
     		"banktype":banktype
     	};
