@@ -27,7 +27,10 @@ exports.findByDistance = function(req, res) {
 
     var retdata = {};
     var usertype = 0;
-    var maxDistance = 10/3963;
+
+    // 50000 - max distance in meters 
+    maxDistance = 50000;
+    //var maxDistance = 10/3963;
     //maxDistance = 1000000/3963;
     AM.findByDistance_v2(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
 		if (e) {
@@ -99,7 +102,9 @@ exports.findByDistanceDetailID_v1 = function(req, res) {
 
     var retdata = {};
     var usertype = 0;
-    var maxDistance = 10/3963;
+    // 50000 - max distance in meters 
+    maxDistance = 50000;
+    //var maxDistance = 10/3963;
     //maxDistance = 1000000/3963;
     AM.findByDistance_v2(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
 		if (e) {
@@ -156,7 +161,9 @@ exports.findByDistanceDetailName_v1 = function(req, res) {
 
     var retdata = {};
     var usertype = 0;
-    var maxDistance = 10/3963;
+    // 50000 - max distance in meters 
+    maxDistance = 50000;
+    //var maxDistance = 10/3963;
     //maxDistance = 1000000/3963;
     AM.findByDistance_v2(req.body.longtitude,req.body.lattitude,number,conditions,maxDistance,function(e, o) {
 		if (e) {
@@ -1538,7 +1545,10 @@ exports.findByDistanceWithAccountIDDriver = function(req, res) {
     
     var retdata = {};
     var usertype = 1;
-    var maxDistance = 10/3963;
+     // 50000 - max distance in meters 
+    maxDistance = 50000;
+    //var maxDistance = 10/3963;
+    //maxDistance = 1000000/3963;
 	AM.findById(id,usertype,function(e, o) {
 		if (e) {
 			retdata.msg = e;
@@ -1588,7 +1598,10 @@ exports.findByDistanceWithAccountIDClient = function(req, res) {
     
     var retdata = {};
     var usertype = 0;
-    var maxDistance = 10/3963;
+    // 50000 - max distance in meters 
+    maxDistance = 50000;
+    //var maxDistance = 10/3963;
+    //maxDistance = 1000000/3963;
 	AM.findById(id,usertype,function(e, o) {
 		if (e) {
 			retdata.msg = e;

@@ -974,8 +974,14 @@ AM.findByDistance_v2 = function(longtitude, lattitude, number, conditions, maxDi
 	}
 	
 	var lat = lattitude;
-	var lon = longtitude;	
-    db.command({geoNear: tbAccounts, near: [Number(lon),Number(lat)] , distanceMultiplier: 3963, spherical: true, num: Number(number), maxDistance : Number(maxDistance),
+	var lon = longtitude;
+
+	// max distance in meter = 6378137 - miles = 3963
+	// 1500 - max distance in meters 
+	// 6378137 - Earth average radius in meters 
+
+	var distanceMultiplierinMeter = 6378137;
+    db.command({geoNear: tbAccounts, near: [Number(lon),Number(lat)] , distanceMultiplier: Number(distanceMultiplierinMeter), spherical: true, num: Number(number), maxDistance : Number(maxDistance),
      	query:{
 			$and:[
 					con
