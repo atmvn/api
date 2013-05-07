@@ -3,7 +3,7 @@
 var    AM = require('../modules/accountModule');
 var    aigoDefine = require('../configs/define');
 //var app = express.createServer();
-var    MAXPLACE = 20;
+var    MAXPLACE = 1000;
 
 exports.findByDistance = function(req, res) {
     
